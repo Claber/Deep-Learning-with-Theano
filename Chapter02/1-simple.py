@@ -4,14 +4,15 @@ from theano import theano
 import theano.tensor as T
 import pickle, gzip
 import timeit
+import math
 
-data_dir = "/sharedfiles/"
+data_dir = "../"
 
 print("Using device", theano.config.device)
 
 print("Loading data")
-with gzip.open(data_dir + "mnist.pkl.gz", 'rb') as f:
-    train_set, valid_set, test_set = pickle.load(f)
+with open(data_dir + "mnist.pkl", 'rb') as f:
+    train_set, valid_set, test_set = pickle.load(f, encoding='latin1')
 
 train_set_x = theano.shared(numpy.asarray(train_set[0],  dtype=theano.config.floatX))
 train_set_y = theano.shared(numpy.asarray(train_set[1],  dtype='int32'))
@@ -78,8 +79,9 @@ train_error = numpy.zeros(n_iters)
 
 validation_interval = 100
 n_valid_batches = valid_set[0].shape[0] // batch_size
-valid_loss = numpy.zeros(n_iters / validation_interval)
-valid_error = numpy.zeros(n_iters / validation_interval)
+zeros_num = int(math.floor(n_iters / validation_interval))
+valid_loss = numpy.zeros(zeros_num)
+valid_error = numpy.zeros(zeros_num)
 
 start_time = timeit.default_timer()
 for epoch in range(n_epochs):
